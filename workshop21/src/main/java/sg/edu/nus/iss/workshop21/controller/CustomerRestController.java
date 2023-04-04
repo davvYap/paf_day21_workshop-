@@ -54,10 +54,6 @@ public class CustomerRestController {
     public ResponseEntity<String> getCustomerById(@PathVariable String id) {
         SqlRowSet result = customerRepository.getCustomerById(Integer.parseInt(id));
         Optional<Customer> customer = Optional.empty();
-        if (result.first()) {
-            customer = Optional.of(Customer.createFromResults(result));
-        }
-
         if (customer.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -65,6 +61,9 @@ public class CustomerRestController {
                             .add("error message", "Cannot find customer with id %s".formatted(id))
                             .build()
                             .toString());
+        }
+        if (result.first()) {
+            customer = Optional.of(Customer.createFromResults(result));
         }
 
         return ResponseEntity
